@@ -132,4 +132,22 @@ class CompletablesTest extends TestCase
         $this->assertContains($otherSkill->id, $user->skillCompletions->pluck('completable_id'));
         $this->assertNotContains($skill->id, $user->skillCompletions->pluck('completable_id'));
     }
+
+    /** @test */
+    public function user_has_a_completable()
+    {
+        $user = User::factory()->create();
+        $module = Module::factory()->create();
+        $completion = Completion::create([
+            'completable_type' => $module->getMorphClass(),
+            'completable_id' => $module->id,
+            'user_id' => $user->id,
+        ]);
+
+        // Method 1:
+        $this->assertInstanceOf(User::class, $completion->user);
+
+        // Method 2:
+        $this->assertEquals(1, $completion->user->count());
+    }
 }
